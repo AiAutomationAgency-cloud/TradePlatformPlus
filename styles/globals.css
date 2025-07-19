@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --stocksense-primary: hsl(207, 90%, 54%);
+  --stocksense-secondary: hsl(215, 28%, 17%);
+  --stocksense-accent: hsl(142, 71%, 45%);
+  --stocksense-warning: hsl(45, 93%, 58%);
+  --stocksense-danger: hsl(0, 84%, 60%);
+  --stocksense-dark: hsl(222, 84%, 5%);
+  --stocksense-surface: hsl(215, 28%, 17%);
+  --stocksense-text-primary: hsl(210, 40%, 98%);
+  --stocksense-text-secondary: hsl(215, 20%, 65%);
+}
+
+/* Global extension styles */
+.stocksense-extension {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--stocksense-text-primary);
+  line-height: 1.5;
+}
+
+/* Learning mode overlay styles */
+.stocksense-learning-mode .stocksense-pattern-overlay {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.stocksense-learning-mode .stocksense-pattern-doji {
+  background: var(--stocksense-warning);
+  color: var(--stocksense-dark);
+}
+
+.stocksense-learning-mode .stocksense-pattern-bullish {
+  background: var(--stocksense-accent);
+}
+
+.stocksense-learning-mode .stocksense-pattern-bearish {
+  background: var(--stocksense-danger);
+}
+
+/* Custom scrollbar for sidebar */
+.stocksense-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(215, 28%, 17%) transparent;
+}
+
+.stocksense-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stocksense-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stocksense-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(215, 28%, 17%);
+  border-radius: 3px;
+}
+
+.stocksense-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(215, 28%, 25%);
+}
+
+/* Animation classes */
+.stocksense-fade-in {
+  animation: stocksense-fadeIn 0.3s ease-in-out;
+}
+
+@keyframes stocksense-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stocksense-pulse {
+  animation: stocksense-pulse 2s ease-in-out infinite;
+}
+
+@keyframes stocksense-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Status indicator */
+.stocksense-status-indicator {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: var(--stocksense-dark);
+  border: 1px solid hsl(215, 28%, 17%);
+  border-radius: 8px;
+  padding: 8px 12px;
+  z-index: 9998;
+  font-size: 12px;
+  color: var(--stocksense-text-primary);
+}
+
+/* Ensure extension UI doesn't interfere with platform styles */
+.stocksense-extension * {
+  box-sizing: border-box;
+}
+
+.stocksense-extension button:focus {
+  outline: 2px solid var(--stocksense-primary);
+  outline-offset: 2px;
+}
+
+/* Hide extension when printing */
+@media print {
+  .stocksense-extension {
+    display: none !important;
+  }
+}

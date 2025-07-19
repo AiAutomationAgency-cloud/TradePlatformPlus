@@ -1,0 +1,29 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="128" height="128" rx="24" fill="#1e293b"/>
+<rect x="8" y="8" width="112" height="112" rx="16" fill="#0f172a"/>
+
+<!-- Brain Icon (AI Analysis) -->
+<path d="M40 32c-4.4 0-8 3.6-8 8v8c0 4.4 3.6 8 8 8h8c4.4 0 8-3.6 8-8v-8c0-4.4-3.6-8-8-8h-8z" fill="#3b82f6"/>
+<circle cx="44" cy="44" r="2" fill="#ffffff"/>
+<circle cx="52" cy="44" r="2" fill="#ffffff"/>
+<path d="M42 50h8" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+
+<!-- Stock Chart Lines -->
+<path d="M24 70 L36 58 L48 66 L60 54 L72 62 L84 50 L96 58 L104 46" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- Candlestick Pattern -->
+<rect x="70" y="75" width="6" height="20" fill="#ef4444"/>
+<rect x="78" y="70" width="6" height="25" fill="#10b981"/>
+<rect x="86" y="78" width="6" height="17" fill="#ef4444"/>
+<rect x="94" y="72" width="6" height="23" fill="#10b981"/>
+
+<!-- Trend Arrow -->
+<path d="M88 30 L96 22 L104 30" stroke="#10b981" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M96 22 L96 36" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+
+<!-- AI Sparkles -->
+<circle cx="28" cy="24" r="2" fill="#fbbf24"/>
+<circle cx="108" cy="32" r="2" fill="#fbbf24"/>
+<circle cx="20" cy="100" r="2" fill="#fbbf24"/>
+<circle cx="100" cy="105" r="2" fill="#fbbf24"/>
+</svg>

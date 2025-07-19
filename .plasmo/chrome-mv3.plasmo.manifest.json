@@ -1,0 +1,80 @@
+{
+  "icons": {
+    "16": "./gen-assets/icon16.plasmo.png",
+    "32": "./gen-assets/icon32.plasmo.png",
+    "48": "./gen-assets/icon48.plasmo.png",
+    "64": "./gen-assets/icon64.plasmo.png",
+    "128": "./gen-assets/icon128.plasmo.png"
+  },
+  "manifest_version": 3,
+  "action": {
+    "default_icon": {
+      "16": "./gen-assets/icon16.plasmo.png",
+      "32": "./gen-assets/icon32.plasmo.png",
+      "48": "./gen-assets/icon48.plasmo.png",
+      "64": "./gen-assets/icon64.plasmo.png",
+      "128": "./gen-assets/icon128.plasmo.png"
+    },
+    "default_popup": "./popup.html"
+  },
+  "version": "1.0.0",
+  "name": "DEV | ",
+  "background": {
+    "service_worker": "./static/background/index.ts"
+  },
+  "options_ui": {
+    "page": "./options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.angelone.in/*"
+      ],
+      "js": [
+        "static/contents/angelone.tsx"
+      ],
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://groww.in/*"
+      ],
+      "js": [
+        "static/contents/groww.tsx"
+      ],
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://kite.zerodha.com/*",
+        "https://groww.in/*",
+        "https://web.angelone.in/*"
+      ],
+      "js": [
+        "static/contents/pattern-overlay.tsx"
+      ],
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://kite.zerodha.com/*",
+        "https://groww.in/*",
+        "https://web.angelone.in/*"
+      ],
+      "js": [
+        "static/contents/stocksense-sidebar.tsx"
+      ],
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://kite.zerodha.com/*"
+      ],
+      "js": [
+        "static/contents/zerodha.tsx"
+      ],
+      "all_frames": false
+    }
+  ]
+}
