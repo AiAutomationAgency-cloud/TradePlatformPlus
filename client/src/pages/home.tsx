@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Download, Brain, Target, MessageCircle, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,9 +15,14 @@ export default function Home() {
               <Brain className="h-8 w-8 text-blue-600 mr-3" />
               <h1 className="text-2xl font-bold text-gray-900">StockSense AI</h1>
             </div>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              Ready for Chrome
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                Ready for Chrome
+              </Badge>
+              <Link href="/auth">
+                <Button>Sign In</Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -32,10 +38,12 @@ export default function Home() {
             on Indian trading platforms with Google Gemini AI.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              <Download className="mr-2 h-5 w-5" />
-              Install Extension
-            </Button>
+            <Link href="/extension">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Download className="mr-2 h-5 w-5" />
+                Install Extension
+              </Button>
+            </Link>
             <Button variant="outline" size="lg">
               <a href="/test-page.html" className="flex items-center">
                 View Demo
@@ -202,9 +210,11 @@ export default function Home() {
                 <Button variant="outline" className="border-green-300 text-green-700 hover:bg-green-100">
                   <a href="/test-page.html">View Test Page</a>
                 </Button>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Download Extension Files
-                </Button>
+                <Link href="/extension">
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    Download Extension Files
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
