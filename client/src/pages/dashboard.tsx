@@ -7,6 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useAuth, useLogout } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
+import TechnicalAnalysis from "@/components/technical-analysis";
+import AIChatInterface from "@/components/ai-chat-interface";
+import MultiPlatformSupport from "@/components/multi-platform-support";
+import LearningMode from "@/components/learning-mode";
 import { 
   Brain, 
   TrendingUp, 
@@ -19,7 +23,9 @@ import {
   Activity,
   AlertTriangle,
   CheckCircle,
-  Zap
+  Zap,
+  Globe,
+  BookOpen
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -113,41 +119,164 @@ export default function Dashboard() {
           <p className="text-gray-600">Here's your trading insight dashboard</p>
         </div>
 
-        {/* Usage Stats */}
-        {!isPremium && (
-          <Card className="mb-8 border-orange-200 bg-orange-50">
-            <CardHeader>
-              <CardTitle className="flex items-center text-orange-800">
-                <Activity className="w-5 h-5 mr-2" />
-                Daily Usage
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>API Calls Used</span>
-                  <span>{user?.apiUsageCount || 0} / {user?.dailyUsageLimit || 10}</span>
-                </div>
-                <Progress value={usagePercentage} className="w-full" />
-                {usagePercentage > 80 && (
-                  <div className="flex items-center text-sm text-orange-600">
-                    <AlertTriangle className="w-4 h-4 mr-1" />
-                    Consider upgrading to Premium for unlimited usage
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Main Dashboard Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <Activity className="w-4 h-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="technical" className="flex items-center space-x-2">
+              <BarChart3 className="w-4 h-4" />
+              <span>Technical Analysis</span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="flex items-center space-x-2">
+              <MessageSquare className="w-4 h-4" />
+              <span>AI Chat</span>
+            </TabsTrigger>
+            <TabsTrigger value="platforms" className="flex items-center space-x-2">
+              <Globe className="w-4 h-4" />
+              <span>Multi-Platform</span>
+            </TabsTrigger>
+            <TabsTrigger value="learning" className="flex items-center space-x-2">
+              <BookOpen className="w-4 h-4" />
+              <span>Learning Mode</span>
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <TabsContent value="overview" className="space-y-6">
+            {/* Usage Stats */}
+            {!isPremium && (
+              <Card className="border-orange-200 bg-orange-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-orange-800">
+                    <Activity className="w-5 h-5 mr-2" />
+                    Daily Usage
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-orange-700">API Calls Used</span>
+                      <span className="font-semibold text-orange-900">
+                        {user?.apiUsageCount || 0} / {user?.dailyUsageLimit || 10}
+                      </span>
+                    </div>
+                    <Progress value={usagePercentage} className="h-2" />
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-orange-600">
+                        {usagePercentage < 80 ? "Good usage" : usagePercentage < 95 ? "Almost at limit" : "Limit reached"}
+                      </span>
+                      <Button 
+                        size="sm" 
+                        onClick={() => upgradePremium.mutate()}
+                        disabled={upgradePremium.isPending}
+                        className="bg-yellow-600 hover:bg-yellow-700"
+                      >
+                        <Crown className="w-3 h-3 mr-1" />
+                        Upgrade to Premium
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center">
+                    <Brain className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900">AI Analysis</div>
+                    <div className="text-sm text-gray-600">Powered by Gemini 2.5 Flash</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center">
+                    <Globe className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900">3 Platforms</div>
+                    <div className="text-sm text-gray-600">Zerodha, Groww, AngelOne</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center">
+                    <TrendingUp className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900">Technical</div>
+                    <div className="text-sm text-gray-600">Real-time pattern detection</div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-center">
+                    <BookOpen className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900">Learning</div>
+                    <div className="text-sm text-gray-600">Educational overlays</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Quick Actions */}
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Get started with common tasks</CardDescription>
+                <CardDescription>Get started with StockSense AI features</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button asChild className="h-20 flex flex-col items-center justify-center space-y-2">
+                    <Link href="/extension">
+                      <Download className="w-6 h-6" />
+                      <div className="text-center">
+                        <div className="font-medium">Install Extension</div>
+                        <div className="text-xs opacity-80">Add to Chrome browser</div>
+                      </div>
+                    </Link>
+                  </Button>
+                  
+                  <Button variant="outline" asChild className="h-20 flex flex-col items-center justify-center space-y-2">
+                    <a href="/test-page.html" target="_blank">
+                      <Zap className="w-6 h-6" />
+                      <div className="text-center">
+                        <div className="font-medium">Try Demo</div>
+                        <div className="text-xs opacity-80">Test with sample data</div>
+                      </div>
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="technical">
+            <TechnicalAnalysis />
+          </TabsContent>
+
+          <TabsContent value="chat">
+            <AIChatInterface />
+          </TabsContent>
+
+          <TabsContent value="platforms">
+            <MultiPlatformSupport />
+          </TabsContent>
+
+          <TabsContent value="learning">
+            <LearningMode />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

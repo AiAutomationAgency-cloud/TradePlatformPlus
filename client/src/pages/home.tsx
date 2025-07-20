@@ -3,6 +3,7 @@ import { Download, Brain, Target, MessageCircle, TrendingUp, Shield } from "luci
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import FeaturesOverview from "@/components/features-overview";
 
 export default function Home() {
   return (
@@ -52,109 +53,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Brain className="mr-2 h-5 w-5 text-blue-600" />
-                AI-Powered Analysis
-              </CardTitle>
-              <CardDescription>
-                Google Gemini 2.5 Flash provides intelligent market insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Real-time pattern detection</li>
-                <li>• Technical indicator analysis</li>
-                <li>• Buy/Sell/Hold recommendations</li>
-                <li>• Risk assessment with confidence scores</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Target className="mr-2 h-5 w-5 text-green-600" />
-                Multi-Platform Support
-              </CardTitle>
-              <CardDescription>
-                Works seamlessly across major Indian trading platforms
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Zerodha Kite integration</li>
-                <li>• Groww platform support</li>
-                <li>• AngelOne compatibility</li>
-                <li>• Automatic stock detection</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageCircle className="mr-2 h-5 w-5 text-purple-600" />
-                Interactive Chat
-              </CardTitle>
-              <CardDescription>
-                Ask questions and get instant AI-powered responses
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Context-aware conversations</li>
-                <li>• Stock-specific Q&A</li>
-                <li>• Trading strategy insights</li>
-                <li>• Educational explanations</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-orange-500">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="mr-2 h-5 w-5 text-orange-600" />
-                Technical Analysis
-              </CardTitle>
-              <CardDescription>
-                Comprehensive technical indicators and pattern recognition
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Candlestick pattern detection</li>
-                <li>• RSI, MACD, moving averages</li>
-                <li>• Support/resistance levels</li>
-                <li>• Volume analysis</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-red-500">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Shield className="mr-2 h-5 w-5 text-red-600" />
-                Learning Mode
-              </CardTitle>
-              <CardDescription>
-                Educational overlays to improve your trading knowledge
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Pattern name overlays</li>
-                <li>• Educational tooltips</li>
-                <li>• Confidence scoring</li>
-                <li>• Visual pattern indicators</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
+        {/* Features Overview Component */}
+        <FeaturesOverview />
+        
         {/* Installation Steps */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-16">
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
@@ -190,46 +91,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Status Section */}
-        <div className="text-center">
-          <Card className="max-w-2xl mx-auto bg-green-50 border-green-200">
-            <CardHeader>
-              <CardTitle className="text-green-800">Extension Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-green-800 font-medium">Ready for Testing</span>
-              </div>
-              <p className="text-green-700 mb-4">
-                The StockSense AI extension has been successfully built and is ready for deployment.
-                All core features are implemented and tested.
-              </p>
-              <div className="flex justify-center gap-4">
-                <Button variant="outline" className="border-green-300 text-green-700 hover:bg-green-100">
-                  <a href="/test-page.html">View Test Page</a>
-                </Button>
-                <Link href="/extension">
-                  <Button className="bg-green-600 hover:bg-green-700">
-                    Download Extension Files
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2025 StockSense AI. Built with React, Plasmo, and Google Gemini AI.</p>
-          <p className="text-gray-400 mt-2">
-            For educational and informational purposes only. Not financial advice.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

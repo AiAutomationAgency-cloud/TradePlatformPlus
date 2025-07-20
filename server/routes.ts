@@ -166,6 +166,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Chat routes
+  app.post("/api/chat/send", requireAuth, async (req, res) => {
+    try {
+      const { message, symbol, context } = req.body;
+      const userId = (req.session as any).userId;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      // Check usage limits for non-premium users
+      const user = await storage.getUser(userId);
+      if (!user?.isPremium && user && user.apiUsageCount >= user.dailyUsageLimit) {
+        return res.status(429).json({ 
+          message: "Daily usage limit reached. Upgrade to Premium for unlimited access.",
+          upgradeRequired: true 
+        });
+      }
+
+      // Generate AI response
+      let aiResponse = "I'm here to help with your trading questions! However, I need access to the Gemini AI service to provide detailed analysis.";
+      let metadata = {
+        type: "general",
+        confidence: 0.5
+      };
+
+      if (model) {
+        try {
+          const prompt = `You are StockSense AI, an expert stock market analyst. 
+          
+          User message: "${message}"
+          Stock symbol: ${symbol || "General"}
+          Context: ${context || "web_app"}
+          
+          Provide helpful, accurate trading insights. Focus on:
+          - Technical analysis and pattern recognition
+          - Risk management advice  
+          - Market trends and indicators
+          - Educational content about trading
+          
+          Format your response as helpful advice. Always include appropriate risk disclaimers.
+          
+          If the message is about specific patterns, mention confidence levels.
+          If it's about recommendations, be clear about timeframes and risk levels.`;
+
+          const result = await model.generateContent(prompt);
+          aiResponse = result.response.text();
+          
+          // Determine response type based on content
+          if (message.toLowerCase().includes('pattern')) metadata.type = 'pattern';
+          else if (message.toLowerCase().includes('buy') || message.toLowerCase().includes('sell')) metadata.type = 'recommendation';  
+          else if (message.toLowerCase().includes('analysis')) metadata.type = 'analysis';
+          else if (message.toLowerCase().includes('learn') || message.toLowerCase().includes('explain')) metadata.type = 'explanation';
+          
+          metadata.confidence = 0.85;
+        } catch (error) {
+          console.error("Gemini API error:", error);
+          aiResponse = `I understand you're asking about ${symbol || 'trading'}. While I can't access live AI analysis right now, here are some general insights:
+
+For pattern analysis: Look for confirmation signals and volume patterns.
+For recommendations: Always consider your risk tolerance and diversification.
+For learning: Start with basic chart patterns like support/resistance levels.
+
+Please ensure you have proper API access configured for detailed AI analysis.`;
+        }
+      }
+
+      // Update user API usage
+      if (user && !user.isPremium) {
+        await storage.updateUser(userId, { 
+          apiUsageCount: user.apiUsageCount + 1 
+        });
+      }
+
+      res.json({ 
+        response: aiResponse,
+        metadata,
+        usage: user ? {
+          current: user.apiUsageCount + 1,
+          limit: user.dailyUsageLimit,
+          isPremium: user.isPremium
+        } : null
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.post("/api/chat/conversations", requireAuth, async (req, res) => {
     try {
       const validatedData = insertChatConversationSchema.parse({
@@ -486,13 +573,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       patterns: [
         { type: "Hammer", confidence: 85, timeframe: "1D" },
         { type: "Bullish Engulfing", confidence: 78, timeframe: "4H" }
-      ]
+      ],
+      recommendation: "BUY",
+      confidence: 82,
+      timestamp: new Date().toISOString()
     };
-
+    
     res.json({ data: demoData });
   });
 
-  const httpServer = createServer(app);
-
-  return httpServer;
+  return app;
 }
