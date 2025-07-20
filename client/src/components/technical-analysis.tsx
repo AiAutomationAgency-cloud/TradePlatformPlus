@@ -50,6 +50,18 @@ export default function TechnicalAnalysis({ symbol = "RELIANCE" }: { symbol?: st
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
+  // Fetch pattern recognition data
+  const { data: patternData } = useQuery({
+    queryKey: ["/api/patterns"],
+    refetchInterval: 30000,
+  });
+
+  // Fetch fundamental analysis data
+  const { data: fundamentalData } = useQuery({
+    queryKey: ["/api/fundamentals", symbol],
+    refetchInterval: 60000, // Refresh every minute
+  });
+
   const indicators: TechnicalIndicator[] = technicalData?.indicators || [
     {
       name: "RSI (14)",
@@ -81,24 +93,7 @@ export default function TechnicalAnalysis({ symbol = "RELIANCE" }: { symbol?: st
     }
   ];
 
-  const patterns: PatternDetection[] = technicalData?.patterns || [
-    {
-      name: "Bullish Engulfing",
-      type: "bullish",
-      confidence: 0.87,
-      description: "Strong reversal pattern with high volume confirmation",
-      action: "BUY",
-      timeframe: "Short-term"
-    },
-    {
-      name: "Hammer",
-      type: "bullish", 
-      confidence: 0.73,
-      description: "Potential reversal signal after downtrend",
-      action: "WAIT",
-      timeframe: "Medium-term"
-    }
-  ];
+  const patterns: PatternDetection[] = patternData?.patterns || technicalData?.patterns || [];
 
   const supportResistance: SupportResistance = technicalData?.levels || {
     support: [2820, 2790, 2745],
@@ -178,9 +173,10 @@ export default function TechnicalAnalysis({ symbol = "RELIANCE" }: { symbol?: st
       </div>
 
       <Tabs defaultValue="indicators" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="indicators">Technical Indicators</TabsTrigger>
-          <TabsTrigger value="patterns">Pattern Detection</TabsTrigger>
+          <TabsTrigger value="patterns">Candlestick Patterns</TabsTrigger>
+          <TabsTrigger value="fundamentals">Fundamental Analysis</TabsTrigger>
           <TabsTrigger value="levels">Support & Resistance</TabsTrigger>
           <TabsTrigger value="volume">Volume Analysis</TabsTrigger>
         </TabsList>
@@ -233,7 +229,7 @@ export default function TechnicalAnalysis({ symbol = "RELIANCE" }: { symbol?: st
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg">{pattern.name}</CardTitle>
-                    <CardDescription>{pattern.timeframe} • Confidence: {(pattern.confidence * 100).toFixed(0)}%</CardDescription>
+                    <CardDescription>{pattern.timeframe} • Confidence: {pattern.confidence}%</CardDescription>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Badge className={getActionColor(pattern.action)}>
@@ -337,6 +333,68 @@ export default function TechnicalAnalysis({ symbol = "RELIANCE" }: { symbol?: st
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="fundamentals" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {fundamentalData?.fundamentals && Object.entries(fundamentalData.fundamentals).map(([key, value]) => {
+              const formatValue = (key: string, val: any) => {
+                if (key.includes('Market Cap') || key.includes('Revenue') || key.includes('Profit')) {
+                  if (val > 100000) return `₹${(val / 100000).toFixed(1)}L Cr`;
+                  if (val > 1000) return `₹${(val / 1000).toFixed(1)}K Cr`;
+                  return `₹${val.toFixed(1)} Cr`;
+                } else if (key.includes('EPS') || key.includes('Book Value')) {
+                  return `₹${val.toFixed(2)}`;
+                } else if (key.includes('52W')) {
+                  return `₹${val.toFixed(2)}`;
+                } else if (key.includes('Dividend Yield') || key.includes('ROE')) {
+                  return `${val.toFixed(2)}%`;
+                } else {
+                  return val.toFixed(2);
+                }
+              };
+
+              const getHealthColor = (key: string, val: any) => {
+                if (key.includes('P/E')) {
+                  if (val > 30) return 'text-red-600';
+                  if (val < 15) return 'text-green-600';
+                  return 'text-blue-600';
+                } else if (key.includes('Debt/Equity')) {
+                  if (val > 1) return 'text-red-600';
+                  if (val < 0.3) return 'text-green-600';
+                  return 'text-blue-600';
+                } else if (key.includes('ROE')) {
+                  if (val > 15) return 'text-green-600';
+                  if (val < 10) return 'text-red-600';
+                  return 'text-blue-600';
+                } else {
+                  return 'text-gray-800';
+                }
+              };
+
+              return (
+                <Card key={key} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-gray-600">{key}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-2xl font-bold ${getHealthColor(key, value)}`}>
+                      {formatValue(key, value)}
+                    </div>
+                    {learningMode && (
+                      <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                        {key.includes('P/E') && 'Price-to-Earnings ratio measures valuation'}
+                        {key.includes('EPS') && 'Earnings per Share shows profitability per share'}
+                        {key.includes('Market Cap') && 'Total market value of company shares'}
+                        {key.includes('ROE') && 'Return on Equity measures profitability efficiency'}
+                        {key.includes('Debt/Equity') && 'Company debt relative to shareholder equity'}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 

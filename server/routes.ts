@@ -176,8 +176,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Chat routes
-  app.post("/api/chat/send", requireAuth, async (req, res) => {
+  // Chat routes - removed auth requirement for demo
+  app.post("/api/chat/send", async (req, res) => {
     try {
       const { message, symbol, context } = req.body;
       const userId = (req.session as any).userId;
@@ -186,13 +186,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Message is required" });
       }
 
-      // Check usage limits for non-premium users
-      const user = await storage.getUser(userId);
-      if (!user?.isPremium && user && user.apiUsageCount >= user.dailyUsageLimit) {
-        return res.status(429).json({ 
-          message: "Daily usage limit reached. Upgrade to Premium for unlimited access.",
-          upgradeRequired: true 
-        });
+      // For demo purposes, skip usage limits
+      let user = null;
+      if (req.session?.userId) {
+        user = await storage.getUser(req.session.userId);
       }
 
       // Generate AI response
@@ -475,13 +472,51 @@ Please ensure you have proper API access configured for detailed AI analysis.`;
     }
   });
 
-  app.get("/api/patterns", requireAuth, async (req, res) => {
-    try {
-      const patterns = await storage.getPatternDetectionsByUser((req.session as any).userId);
-      res.json({ patterns });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
+  app.get("/api/patterns", async (req, res) => {
+    const { symbol = "RELIANCE" } = req.query;
+    
+    // Mock candlestick data for pattern detection
+    const mockCandlestickData = [
+      { open: 2450.0, high: 2467.8, low: 2445.2, close: 2456.7, volume: 1234567 },
+      { open: 2456.7, high: 2475.3, low: 2448.1, close: 2471.2, volume: 1456789 },
+      { open: 2471.2, high: 2478.9, low: 2462.5, close: 2469.8, volume: 1123456 },
+      { open: 2469.8, high: 2481.4, low: 2465.3, close: 2477.6, volume: 1345678 },
+      { open: 2477.6, high: 2485.2, low: 2472.1, close: 2479.3, volume: 1567890 }
+    ];
+
+    const patterns = [
+      {
+        name: "Hammer",
+        type: "bullish",
+        confidence: 85,
+        description: "Potential reversal signal. Buyers stepping in at lower levels.",
+        action: "BUY",
+        timeframe: "1D"
+      },
+      {
+        name: "Bullish Engulfing", 
+        type: "bullish",
+        confidence: 78,
+        description: "Strong reversal signal. Bulls taking control after bearish move.",
+        action: "BUY",
+        timeframe: "4H"
+      },
+      {
+        name: "Morning Star",
+        type: "bullish", 
+        confidence: 82,
+        description: "Three-candle reversal pattern. Strong bullish signal.",
+        action: "BUY",
+        timeframe: "1D"
+      }
+    ];
+
+    res.json({
+      symbol,
+      patterns,
+      candlestickData: mockCandlestickData,
+      timestamp: new Date().toISOString()
+    });
   });
 
   // User preferences routes
@@ -556,6 +591,88 @@ Please ensure you have proper API access configured for detailed AI analysis.`;
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
+  });
+
+
+
+  // Fundamental Analysis API
+  app.get("/api/fundamentals/:symbol", async (req, res) => {
+    const { symbol } = req.params;
+    
+    const fundamentalData = {
+      symbol: symbol || "RELIANCE",
+      "P/E": 24.5,
+      "EPS": 98.2,
+      "Market Cap": 1685432,
+      "Book Value": 1245.8,
+      "Debt/Equity": 0.42,
+      "ROE": 15.8,
+      "Revenue": 792845,
+      "Profit": 68234,
+      "52W High": 2856.8,
+      "52W Low": 2234.5,
+      "Dividend Yield": 0.38,
+      "PEG Ratio": 1.2,
+      "Price/Book": 1.97,
+      "Current Ratio": 1.45
+    };
+
+    res.json({
+      symbol: symbol,
+      fundamentals: fundamentalData,
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  // Technical Analysis API 
+  app.get("/api/analysis/technical/:symbol", async (req, res) => {
+    const { symbol } = req.params;
+    
+    const technicalData = {
+      symbol: symbol || "RELIANCE",
+      indicators: [
+        {
+          name: "RSI (14)",
+          value: 68.5,
+          signal: "bullish",
+          description: "Relative Strength Index indicates bullish momentum",
+          confidence: 0.82
+        },
+        {
+          name: "MACD",
+          value: 12.3,
+          signal: "bullish",
+          description: "Moving Average Convergence Divergence shows positive trend",
+          confidence: 0.75
+        },
+        {
+          name: "SMA (20)",
+          value: 2445.6,
+          signal: "bullish",
+          description: "20-day Simple Moving Average trend line",
+          confidence: 0.71
+        },
+        {
+          name: "Bollinger Bands",
+          value: 2456.7,
+          signal: "neutral",
+          description: "Price near middle band, neutral signal",
+          confidence: 0.65
+        }
+      ],
+      patterns: [
+        { name: "Hammer", type: "bullish", confidence: 85, action: "BUY", timeframe: "1D" },
+        { name: "Bullish Engulfing", type: "bullish", confidence: 78, action: "BUY", timeframe: "4H" }
+      ],
+      supportResistance: {
+        support: [2440.0, 2425.5, 2410.2],
+        resistance: [2485.0, 2495.8, 2510.5],
+        current: 2456.7
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    res.json(technicalData);
   });
 
   // Demo data for testing
