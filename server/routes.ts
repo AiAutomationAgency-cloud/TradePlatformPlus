@@ -54,22 +54,14 @@ const requirePremium = async (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Session setup
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
-
+  // Session setup with simplified configuration for development
   app.use(session({
     secret: process.env.SESSION_SECRET || 'stocksense-secret-key-2025',
-    store: sessionStore,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Changed to true for development
     cookie: {
-      httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      httpOnly: false, // Changed for development debugging
+      secure: false,
       maxAge: sessionTtl,
     },
   }));
@@ -77,6 +69,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve the test page for extension testing
   app.get("/test-page.html", (req, res) => {
     res.sendFile(path.resolve("test-page.html"));
+  });
+
+  // Demo auto-login route for testing
+  app.post("/api/auth/demo-login", async (req, res) => {
+    try {
+      const user = await storage.getUserByUsername('demo');
+      if (!user) {
+        return res.status(404).json({ message: "Demo user not found" });
+      }
+
+      // Create session
+      (req.session as any).userId = user.id;
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
   });
 
   // Authentication routes

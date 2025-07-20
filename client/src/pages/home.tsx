@@ -3,7 +3,35 @@ import { Download, Brain, Target, MessageCircle, TrendingUp, Shield } from "luci
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 import FeaturesOverview from "@/components/features-overview";
+
+function DemoLogin() {
+  const [, setLocation] = useLocation();
+  
+  const demoLogin = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/auth/demo-login");
+    },
+    onSuccess: () => {
+      setLocation("/");
+    },
+  });
+
+  return (
+    <Button 
+      size="lg" 
+      variant="default" 
+      onClick={() => demoLogin.mutate()}
+      disabled={demoLogin.isPending}
+      className="bg-green-600 hover:bg-green-700"
+    >
+      {demoLogin.isPending ? "Logging in..." : "Try Demo Features"}
+    </Button>
+  );
+}
 
 export default function Home() {
   return (
@@ -39,6 +67,7 @@ export default function Home() {
             on Indian trading platforms with Google Gemini AI.
           </p>
           <div className="flex justify-center gap-4">
+            <DemoLogin />
             <Link href="/extension">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                 <Download className="mr-2 h-5 w-5" />
